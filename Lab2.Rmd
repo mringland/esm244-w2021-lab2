@@ -1,0 +1,70 @@
+---
+title: "ESM 244 Lab 2"
+author: "Minnie Ringland"
+date: "1/14/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(janitor)
+library(palmerpenguins)
+library(here)
+
+# for PCA:
+library(ggfortify)
+
+
+# for ggplot customization
+library(readxl)
+library(gghighlight)
+library(lubridate)
+library(plotly)
+
+# for compound figures:
+library(patchwork)
+
+```
+
+
+## Part 1: PCA with penguins
+```{r}
+#first some wrangling of penguins dataset
+penguin_pca <- penguins %>% 
+  select(body_mass_g, ends_with("_mm")) %>% 
+  drop_na() %>% 
+  scale() %>% #scale data to make sure no variable is overweighted in PC due to units
+  prcomp() #PCA
+
+penguin_pca$rotation
+
+# same dataset but with other variables we might want to plot with
+penguin_complete <- penguins %>% 
+  drop_na(body_mass_g, ends_with("_mm")) #same rows but all columns
+
+# create a plot with autoplot
+autoplot(penguin_pca,
+         data = penguin_complete,
+         colour = 'species',
+         loadings = TRUE, #arrows
+         loadings.label = TRUE,
+         loadings.colour = "black",
+         loadings.label.colour = "black",
+         loadings.label.vjust = -0.5
+         ) +
+  scale_color_manual(values = c("blue","purple","orange")) +
+  scale_fill_manual(values = c("blue","purple","orange")) +
+  theme_minimal()
+
+# Variance explained by each PC
+screeplot(penguin_pca, type = "lines")
+
+
+```
+
+
+
+
+
